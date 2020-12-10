@@ -69,16 +69,12 @@ class Weather {
 
 	public function __construct($msg = false) {
 		if ($msg == false) return;
-		$this->logfile = dirname(__FILE__). '/logs/weather_debug.txt';
-		$this->log(__LINE__.': hep');
+		$this->logfile = dirname(__FILE__).'/logs/weather_debug.txt';
 		include dirname(__FILE__).'/config.php';
 		$this->dbpath = $weatherdb;
 		$this->apikey .= $openwmapapikey;
 		if ($string = $this->filter_keyword($msg)) {
-			$this->log(__LINE__.': hep GOAL!');
-			$this->log($string);
 			$this->returnstr = $string;
-			#return $string;
 		}
 	}
 
@@ -95,26 +91,19 @@ class Weather {
 
 	private function request_api($url) {
 		$url .= $this->apikey;
-		$this->log(__LINE__.' url: '.$url);
 		$data = file_get_contents($url);
-		$this->log(__LINE__.': '.$data);
 		return json_decode($data);
 	}
 
 	private function filter_keyword ($msg) {
 		$returnstring = '';
-		#$this->log(__LINE__.': hep');
 		if (preg_match('/\!(sää |saa |s[^ae] ?)(.*)$/', $msg, $city)) {
-			$this->log(__LINE__.': hep sää, city: '.$city[2]);
 			$returnstring = $this->getSayLine($this->FINDWEATHER($city[2]));
 		} elseif (preg_match('/\!(se ?)(.*)$/', $msg, $city)) {
-			$this->log(__LINE__.': hep se, city: '. $city[2]);
 			$returnstring = $this->FINDFORECAST($city[2]);
 		} elseif (preg_match('/\!(sa ?)(.*)$/', $msg, $city)) {
-			$this->log(__LINE__.': hep sa, city: '. $city[2]);
 			$returnstring = $this->FINDAREAWEATHER($city[2]);
 		}
-		$this->log(__LINE__.': hep: returnstring: '.$returnstring);
 		return $returnstring;
 	}
 
@@ -236,12 +225,10 @@ class Weather {
 		} else {
 			$json = $this->request_api($this->forecasturl.'q='.$searchword);
 		}
-		# 40 results .. $this->log(print_r($json, true)); die();
-		if ($json == '-1') {
+		if ($json == false) {
 			if ($results = $this->GETCITYCOORDS($searchword)) {
 				$json = $this->request_api($this->forecasturl.'q='.$results[2]);
 			}
-			#var_dump($json);
 			if ($json == false) {
 				return false;
 			}
@@ -257,12 +244,10 @@ class Weather {
 				$returnstring = '<b>'.$json->city->name . ', '.$json->city->country.':</b> '.$returnstring;
 			}
 			$weathericon = $this->replace_with_emoji($item->weather[0]->main, $json->city->sunrise,	$json->city->sunset, $item->dt);
-			#dp(__LINE__.' '.$item->{dt});
 			$hour = date('H',$item->dt);
 			$returnstring .= "<b>".sprintf('%.2d', $hour) .":</b> $weathericon ".round($item->main->temp, 1) .'°C, ';
 			$index++;
 		}
-		$this->log(__LINE__.': returnstring: '. $returnstring);
 		return $returnstring;
 	}
 
@@ -421,7 +406,7 @@ class Weather {
 	}
 
 	# insert line into Database
-	public function insertIntoDB($sqlString = null, $params = null) {
+	private function insertIntoDB($sqlString = null, $params = null) {
 		if ($sqlString === null) return false;
 		#$this->pi(__FUNCTION__.": sqlString: " .$sqlString);
 		try {
