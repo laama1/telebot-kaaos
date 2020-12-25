@@ -4,7 +4,15 @@ require_once('weather.php');
 class MyBot {
 
 /**
- * Telegram bot. Sends messages received via HTTP-GET to telegram.
+ * Telegram bot. Sends messages received via HTTP-GET to telegram. Like a gateway
+ * Answers to telegram !commands.
+ * Supported commands:
+ * !nytsoi (now playing in stream)
+ * !kuuntelijat (listeners)
+ * !np chill (song info for chill stream)
+ * !np
+ * !s <city> (for weather)
+ * 
  * @author LAama1
  * @date 24.11.2020
  * 
@@ -12,7 +20,7 @@ class MyBot {
 
 	private $path = '';				// telegram webhook url
 	private $logfile;				// text log file
-	private $logenabled = 1;		// log to file enabled or not
+	private $logenabled = 0;		// log to file enabled or not
 	private $channels = array();	// telegram channels / their id's
 	private $chatId = '';			// where the message came from
 	private $tags = '';				// id-tags for stream
@@ -29,6 +37,7 @@ class MyBot {
 		$this->channels = $channels;
 		$this->logenabled = $logenabled;
 		$tags = '';
+		$data = '';
 
 		if (isset($_GET) && isset($_GET['nytsoi'])) {
 			$data = $_GET['nytsoi'];
@@ -51,6 +60,7 @@ class MyBot {
 			$data = $update['channel_post']['text'];
 			$this->chatId = $update['channel_post']['chat']['id'];
 		}
+		if ($data = '') return;
 
 		if (strpos($data, "!np stream2") === 0) {
 			$tags = file_get_contents('http://kaaosradio.fi/npfile_stream2_tags');
@@ -75,11 +85,8 @@ class MyBot {
 			$this->get_kuuntelijat();
 			return;
 		} elseif (strpos($data, '!s') === 0) {
-			#$this->log(__LINE__.' Still here7...');
 			$w = new Weather($data);
-			#$this->log(__LINE__.' Still here7.1..');
 			$tags = $w->getMessage();
-			$this->log(__LINE__.' Still here7.2... tags: '.$tags);
 		}
 		if ($tags != '') {
 			$this->msg_to_priv($tags, $this->chatId);
@@ -89,7 +96,7 @@ class MyBot {
 	private function msg_to_priv($text, $chatid) {
 		$chat = urlencode($text);
 		$response = file_get_contents($this->path."/sendmessage?chat_id=".$chatid.'&text='.$chat."&parse_mode=html");
-		$this->log('Text: '.$text.', Chatid: '.$chatid.', Response: '.$response);
+		$this->log(__LINE__.' Text: '.$text.', chat: '.$chat.', Chatid: '.$chatid.', Response: '.$response);
 	}
 
 	private function msg_to_kaaos($text) {
@@ -106,7 +113,7 @@ class MyBot {
 		$chat = urlencode($text);
 		//$this->log(__LINE__.' chat: '.$chat);
 		$url = $this->path."/sendmessage?chat_id=".$this->channels['kaaos-bot-testing']."&parse_mode=html&text=".$chat;
-		$this->log(__LINE__.' url: '.$url);
+		$this->log(__LINE__.' Text: '.$text.', chat: '.$chat.', url: '.$url);
 		$response = file_get_contents($url);
 		$this->log(__LINE__.' response: ');
 		$this->log($response);
