@@ -14,6 +14,7 @@ class MyBot_Discord {
     private $_video_statsurl = 'https://video.kaaosradio.fi:8081/stats';
     private $_video_rtmpurl = 'rtmp://video.kaaosradio.fi/';
     private $_icecasturl = '';
+    private $_weburl = 'https://videostream.kaaosradio.fi/';
 
     public function __construct() {
         include dirname(__FILE__).'/config.php';
@@ -35,7 +36,8 @@ class MyBot_Discord {
         } elseif (isset($_GET) && isset($_GET['nytsoi'])) {
             // Kun pyyntö tulee esim. Irssi-skriptistä.
             $data = $_GET['nytsoi'];	// TODO: sanitize
-            $this->composeFromIrssi($data, $this->_icecasturl);
+            //$this->composeFromIrssi($data, $this->_icecasturl);
+            $this->composeFromIrssi($data, $this->_weburl);
         } else if (isset($_REQUEST)) {
             // Kun pyyntö tulee laaman owncastista.
 			$postdata = file_get_contents('php://input');
@@ -84,8 +86,8 @@ class MyBot_Discord {
 		$timestamp = date("c", strtotime("now"));
 		$json_data = json_encode([
         	"content" => "Kaaosradio Live audio!",
-            "username" => "kaaosradio",
-            "avatar_url" => "https://kaaosradio.fi/favicon.png",
+            "username" => "Icecast",
+            "avatar_url" => "https://kaaosradio.fi/images/icons/cyan/play.png",
             "tts" => false,
             "embeds" => [
 				[
@@ -99,9 +101,9 @@ class MyBot_Discord {
                     ],*/
                     "fields" => [
                         [
-                            //"name" => "Icecast url:",
+                            "name" => "Icecast url:",
                             "value" => "https://stream.kaaosradio.fi:8001/stream",
-                            "inline" => true
+                            "inline" => false
                         ],
                     ]
                 ]
@@ -204,6 +206,7 @@ class MyBot_Discord {
 
 	private function makeCurl(string $json_data) {
 	    $ch = curl_init($this->_webhookurl);
+        //$ch = curl_init($this->_botspam_webhook);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: application/json'));
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $json_data);
@@ -222,7 +225,7 @@ class MyBot_Discord {
         if (isset($xml->server)) {
             $applications = $xml->server->application;
             foreach ($applications as $app) {
-                if (trim($app->name) != 'test') {
+                if (trim($app->name) != 'test') {       // FIXME: hardcoded value
                     if (isset($app->live->stream)) {
                         //$new_rtmpurl = $this->_video_rtmpurl.trim($app->live->stream->name);
                         $new_rtmpurl = $this->_video_rtmpurl.trim($app->name).'/'.trim($app->live->stream->name);
