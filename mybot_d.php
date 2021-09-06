@@ -13,7 +13,8 @@ class MyBot_Discord {
 
     private $_video_statsurl = 'https://video.kaaosradio.fi:8081/stats';
     private $_video_rtmpurl = 'rtmp://video.kaaosradio.fi/';
-    private $_icecasturl = '';
+    private $_icecasturl = 'https://stream.kaaosradio.fi:8001/stream';
+    private $_kaaosradiourl = 'https://kaaosradio.fi';
     private $_weburl = 'https://videostream.kaaosradio.fi/';
 
     public function __construct() {
@@ -24,9 +25,7 @@ class MyBot_Discord {
 
         if (isset($_GET) && isset($_GET['nytsoivideo'])) {
             $rtmpurl = '';
-            //$data = utf8_decode($_GET['nytsoivideo']);
             $data = $_GET['nytsoivideo'];	// TODO: sanitize
-            //$data = json_encode($_GET['nytsoivideo']);
             if (isset($_GET['rtmpurl'])) {
                 // not in use currently
                 $rtmpurl = $_GET['rtmpurl'];
@@ -36,14 +35,12 @@ class MyBot_Discord {
         } elseif (isset($_GET) && isset($_GET['nytsoi'])) {
             // Kun pyyntö tulee esim. Irssi-skriptistä.
             $data = $_GET['nytsoi'];	// TODO: sanitize
-            //$this->composeFromIrssi($data, $this->_icecasturl);
-            $this->composeFromIrssi($data, $this->_weburl);
+            $this->composeFromIrssi($data, $this->_kaaosradiourl);
         } else if (isset($_REQUEST)) {
             // Kun pyyntö tulee laaman owncastista.
 			$postdata = file_get_contents('php://input');
 			$oc_data = json_decode($postdata);
 			file_put_contents(dirname(__FILE__).'/logs/owncast.log', $oc_data->eventData->name, FILE_APPEND);
-			//file_put_contents(dirname(__FILE__).'/logs/owncast.log', $postdata.PHP_EOL, FILE_APPEND);
 			if (isset($oc_data->eventData->streamTitle)) {
 				$oc_data_send = $oc_data->eventData->streamTitle;
 				$this->composeFromOwncast($oc_data_send);
