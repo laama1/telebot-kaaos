@@ -3,22 +3,22 @@
 
 # Commands available in Telegram:
 ## Weather:
-!s city
+>!s city
 
 ### Weather forecast:
-!se city
+>!se city
 
 ### Weather for near area:
-!sa city
+>!sa city
 
 ## Get kaaosradio current listeners:
-!kuuntelijat
+>!kuuntelijat
 
 ## Now playing in kaaosradio streams:
-!np
-!np chip
-!np chill
-!np stream2
+>!np  
+>!np chip  
+>!np chill  
+>!np stream2  
 
 ## Now playing in kaaosradio main stream:
-!nytsoi
+>!nytsoi
