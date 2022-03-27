@@ -5,23 +5,28 @@ class MyBot_Discord {
     // Create new webhook in your Discord channel settings and copy&paste URL
     //=======================================================================================================
 
-    // #announcements
+    // Discord #announcements
     private $_webhookurl = '';
     
-    // #botspam
+    // Discord #botspam
     private $_botspam_webhook = '';
 
-    private $_video_statsurl = 'https://video.kaaosradio.fi:8081/stats';
-    private $_video_rtmpurl = 'rtmp://video.kaaosradio.fi/';
-    private $_icecasturl = 'https://stream.kaaosradio.fi:8001/stream';
-    private $_kaaosradiourl = 'https://kaaosradio.fi';
-    private $_weburl = 'https://videostream.kaaosradio.fi/';
+    private $_video_statsurl = '';
+    private $_video_rtmpurl = '';
+    private $_icecasturl = '';
+    private $_kaaosradiourl = '';
+    private $_weburl = '';
 
     public function __construct() {
         include dirname(__FILE__).'/config.php';
+        $this->_video_statsurl = $rtmp_video_statsurl;
+        $this->_video_rtmpurl = $rtmp_video_url;
+        $this->_icecasturl = $icecast_url;
+        $this->_kaaosradiourl = $kaaosradio_url;
         $this->_webhookurl = $discord_webhookurl;
         $this->_botspam_webhook = $discord_botspam_webhookurl;
         $this->_icecasturl = $icecast_url;
+        $this->_weburl = $kaaosradio_video_page_url;
 
         if (isset($_GET) && isset($_GET['nytsoivideo'])) {
             $rtmpurl = '';
@@ -99,7 +104,7 @@ class MyBot_Discord {
                     "fields" => [
                         [
                             "name" => "Icecast url:",
-                            "value" => "https://stream.kaaosradio.fi:8001/stream",
+                            "value" => $this->_icecasturl,
                             "inline" => false
                         ],
                     ]
