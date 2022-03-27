@@ -1,7 +1,7 @@
 <?php
 require_once('weather.php');
 
-class MyBot {
+class TelegramApi {
 
 /**
  * Telegram bot. Sends messages received via HTTP-GET to telegram. Like a gateway
@@ -27,7 +27,7 @@ class MyBot {
 	private $listenurl = 'https://kaaosradio.fi:8001/';		// kaaosradio icecast server address
 
 	public function __construct() {
-		$this->logfile = dirname(__FILE__). '/logs/debug.txt';
+		$this->logfile = dirname(__FILE__). '/logs/TelegramApi_debug.txt';
 		$input = file_get_contents("php://input");
 		$update = json_decode($input, TRUE);
 		$this->log('--------------------');
@@ -40,18 +40,18 @@ class MyBot {
 		$data = '';
 		if (isset($_GET) && isset($_GET['nytsoi'])) {
 			$data = utf8_decode($_GET['nytsoi']);
-			$this->log(__LINE__.' Nytsoi: '.$data);
-			$this->msg_to_kaaos('<b>Nytsoi päivitetty!</b> '.$data. ' https://stream.kaaosradio.fi:8001/stream');
+			#$this->log(__LINE__.' Nytsoi: '.$data);
+			$this->msg_to_kaaos('<b>Nytsoi päivitetty!</b> '.$data. ' '. $this->listenurl.'/stream');
 			return;
 		} elseif (isset($_GET) && isset($_GET['viesti'])) {
 			$data = $_GET['viesti'];
-			$this->log(__LINE__.' Viesti: '.$data);
+			#$this->log(__LINE__.' Viesti: '.$data);
 			//$this->msg_to_bot_test(utf8_decode($data));
 			$this->msg_to_kaaos(utf8_decode($data));
 			return;
 		} elseif (isset($_GET) && isset($_GET['nytsoivideo'])) {
 			$data = $_GET['nytsoivideo'];
-			$this->log(__LINE__.' Nytsoivideo: '.$data);
+			#$this->log(__LINE__.' Nytsoivideo: '.$data);
 			$this->msg_to_kaaos('<b>Videostream!</b> '.$data. ' https://videostream.kaaosradio.fi');
 			return;
 		}
@@ -64,7 +64,7 @@ class MyBot {
 			$data = $update['channel_post']['text'];
 			$this->chatId = $update['channel_post']['chat']['id'];
 		}
-		if ($data = '') return;
+		if ($data == '') return;
 
 		if (strpos($data, "!np stream2") !== false) {
 			$tags = file_get_contents('http://kaaosradio.fi/npfile_stream2_tags');
@@ -105,12 +105,12 @@ class MyBot {
 
 	private function msg_to_kaaos($text) {
 		$chat = urlencode($text);
-		//$this->log(__LINE__.' chat: '.$chat);
 		$url = $this->path.'/sendmessage?chat_id='.$this->channels['kaaosradio'].'&parse_mode=html&text='.$chat;
-		//$this->log(__LINE__.' url: '.$url);
 		$response = file_get_contents($url);
-		$this->log(__LINE__.' response (in next line): ');
+		$this->log(__LINE__.' response from telegram api (in next line): ');
 		$this->log($response);
+		$data = isset($http_response_header) ? $http_response_header : '';
+		$this->log('Response header:'. print_r($data));
 	}
 
 	private function msg_to_bot_test($text) {
@@ -146,5 +146,5 @@ class MyBot {
 	}
 }
 
-$botten = new MyBot();
+$botten = new TelegramApi();
 ?>
