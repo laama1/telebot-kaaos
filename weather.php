@@ -107,8 +107,8 @@ class Weather {
 		return $returnstring;
 	}
 
-	private function getSayLine ($json = false) {
-		if ($json == false) return false;
+	private function getSayLine ($json = null) {
+		if ($json == null) return false;
 		$tempmin = round($json->main->temp_min,1);
 		$tempmax = round($json->main->temp_max,1);
 		$temp = '';
