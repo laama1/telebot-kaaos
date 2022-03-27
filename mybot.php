@@ -1,20 +1,18 @@
 <?php
-require_once('weather.php');
+require_once('plugins/weather.php');
+require_once('plugins/np.php');
+require_once('plugins/kuuntelijat.php');
+require_once('plugins/nytsoi.php');
 
 class TelegramApi {
 
 /**
- * Telegram bot. Sends messages received via HTTP-GET to telegram. Like a gateway
+ * Telegram bot.
  * Answers to telegram !commands.
- * Supported commands:
- * !nytsoi (now playing in stream)
- * !kuuntelijat (listeners)
- * !np chill (song info for chill stream)
- * !np
- * !s <city> (for weather)
+ * Bot Must be configured in telegram first.
  * 
  * @author LAama1
- * @date 24.11.2020
+ * @date 24.11.2020, 27.3.2022
  * 
  */
 
@@ -26,6 +24,8 @@ class TelegramApi {
 	private $tags = '';				// id-tags for stream
 	private $listenurl = 'https://kaaosradio.fi:8001/';		// kaaosradio icecast server address
 
+	private $commands = array();
+
 	public function __construct() {
 		$this->logfile = dirname(__FILE__). '/logs/TelegramApi_debug.txt';
 		$input = file_get_contents("php://input");
@@ -36,25 +36,18 @@ class TelegramApi {
 		$this->path = $path;
 		$this->channels = $channels;
 		$this->logenabled = $logenabled;
+		
+		$this->commands = [
+			'!np' => new Np(),
+			'!nytsoi' => new Nytsoi(),
+			'!kuuntelijat' => new Kuuntelijat(),
+			'!s' => new Weather(),
+		];
+		
+		
 		$tags = '';
 		$data = '';
-		if (isset($_GET) && isset($_GET['nytsoi'])) {
-			$data = utf8_decode($_GET['nytsoi']);
-			#$this->log(__LINE__.' Nytsoi: '.$data);
-			$this->msg_to_kaaos('<b>Nytsoi päivitetty!</b> '.$data. ' '. $this->listenurl.'/stream');
-			return;
-		} elseif (isset($_GET) && isset($_GET['viesti'])) {
-			$data = $_GET['viesti'];
-			#$this->log(__LINE__.' Viesti: '.$data);
-			//$this->msg_to_bot_test(utf8_decode($data));
-			$this->msg_to_kaaos(utf8_decode($data));
-			return;
-		} elseif (isset($_GET) && isset($_GET['nytsoivideo'])) {
-			$data = $_GET['nytsoivideo'];
-			#$this->log(__LINE__.' Nytsoivideo: '.$data);
-			$this->msg_to_kaaos('<b>Videostream!</b> '.$data. ' https://videostream.kaaosradio.fi');
-			return;
-		}
+
 		if (isset($update['message'])) {
 			// Private message
 			$data = $update["message"]["text"];
@@ -65,33 +58,13 @@ class TelegramApi {
 			$this->chatId = $update['channel_post']['chat']['id'];
 		}
 		if ($data == '') return;
+		$args = explode(' ', $data);
+		$command = array_shift($args);
+		if (isset($this->commands[$command])) {
+			$tags = $this->commands[$command]->handle($args);
 
-		if (strpos($data, "!np stream2") !== false) {
-			$tags = file_get_contents('http://kaaosradio.fi/npfile_stream2_tags');
-			$tags .= "\n".$this->listenurl.'stream2';
-
-		} elseif (strpos($data, "!np chill") !== false) {
-			$tags = "<b>np:</b> ".file_get_contents('http://kaaosradio.fi/npfile_chill_tags');
-			$tags .= "\n".$this->listenurl.'chill';
-
-		} elseif (strpos($data, "!np chip") !== false) {
-			$tags = "<b>np:</b> ".file_get_contents('http://kaaosradio.fi/npfile_chip_tags');
-			$tags .= "\n".$this->listenurl.'chip';
-
-		} elseif (strpos($data, "!np") !== false) {
-			$tags = "<b>np:</b> ".file_get_contents('http://kaaosradio.fi/npfile_stream2_tags');
-			//$tags .= "<br>".$this->listenurl.'stream2';
-
-		} elseif (strpos($data, "!nytsoi") !== false) {
-			$tags = "<b>Nytsoi:</b> ".file_get_contents('http://kaaosradio.fi/nytsoi.txt');
-			
-		} elseif (strpos($data, '!kuuntelijat') !== false || strpos($data, '!kuulijat') !== false) {
-			$this->get_kuuntelijat();
-			return;
-		} elseif (strpos($data, '!s') !== false) {
-			$w = new Weather($data);
-			$tags = $w->getMessage();
 		}
+
 		if ($tags != '') {
 			$this->msg_to_priv($tags, $this->chatId);
 		}
@@ -102,7 +75,8 @@ class TelegramApi {
 		$response = file_get_contents($this->path."/sendmessage?chat_id=".$chatid.'&text='.$chat."&parse_mode=html");
 		$this->log(__LINE__.' Text: '.$text.', chat: '.$chat.', Chatid: '.$chatid.', Response: '.$response);
 	}
-
+	
+	/*
 	private function msg_to_kaaos($text) {
 		$chat = urlencode($text);
 		$url = $this->path.'/sendmessage?chat_id='.$this->channels['kaaosradio'].'&parse_mode=html&text='.$chat;
@@ -111,7 +85,7 @@ class TelegramApi {
 		$this->log($response);
 		$data = isset($http_response_header) ? $http_response_header : '';
 		$this->log('Response header:'. print_r($data));
-	}
+	}*/
 
 	private function msg_to_bot_test($text) {
 		$chat = urlencode($text);
@@ -127,11 +101,6 @@ class TelegramApi {
 		if ($this->logenabled) {
 			file_put_contents($this->logfile, date('Y-m-d H:i:s').': IP: '.$this->get_ip().', '.$text . PHP_EOL, FILE_APPEND);
 		}
-	}
-
-	private function get_kuuntelijat() {
-		$data = file_get_contents('http://kaaosradio.fi/kuuntelijat/kuuntelijat_api.php');
-		$this->msg_to_kaaos($data);
 	}
 
 	private function get_ip() : string {
