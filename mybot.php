@@ -43,8 +43,8 @@ class TelegramApi {
 			'!np' => new Np(),
 			'!nytsoi' => new Nytsoi(),
 			'!kuuntelijat' => new Kuuntelijat(),
-			'!seuraavat' => new Seuraavat(),
-			'!seuraava' => new Seuraavat(),
+			'!seuraavat' => new Seuraavat(null),
+			'!seuraava' => new Seuraavat(1),
 			'!s' => new Weather(),
 			'!help' => new Help(),
 		];
