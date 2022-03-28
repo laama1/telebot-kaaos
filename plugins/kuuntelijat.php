@@ -9,9 +9,9 @@ class Kuuntelijat {
         
     }
 
-    public function handle($args) : string {
+    public function handle($args) : ?string {
         if ($data = file_get_contents($this->kuuntelijat_address)) {
-            return $data;
+            return '<b>///</b> '.$data;
         }
     }
 }

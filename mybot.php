@@ -3,6 +3,8 @@ require_once('plugins/weather.php');
 require_once('plugins/np.php');
 require_once('plugins/kuuntelijat.php');
 require_once('plugins/nytsoi.php');
+require_once('plugins/help.php');
+require_once('plugins/seuraavat.php');
 
 class TelegramApi {
 
@@ -41,7 +43,10 @@ class TelegramApi {
 			'!np' => new Np(),
 			'!nytsoi' => new Nytsoi(),
 			'!kuuntelijat' => new Kuuntelijat(),
+			'!seuraavat' => new Seuraavat(),
+			'!seuraava' => new Seuraavat(),
 			'!s' => new Weather(),
+			'!help' => new Help(),
 		];
 		
 		
@@ -61,8 +66,9 @@ class TelegramApi {
 		$args = explode(' ', $data);
 		$command = array_shift($args);
 		if (isset($this->commands[$command])) {
+			$this->log(__LINE__.' Command found! '.$command);
+			$this->log('Args: '.print_r($args, true));
 			$tags = $this->commands[$command]->handle($args);
-
 		}
 
 		if ($tags != '') {
@@ -75,17 +81,6 @@ class TelegramApi {
 		$response = file_get_contents($this->path."/sendmessage?chat_id=".$chatid.'&text='.$chat."&parse_mode=html");
 		$this->log(__LINE__.' Text: '.$text.', chat: '.$chat.', Chatid: '.$chatid.', Response: '.$response);
 	}
-	
-	/*
-	private function msg_to_kaaos($text) {
-		$chat = urlencode($text);
-		$url = $this->path.'/sendmessage?chat_id='.$this->channels['kaaosradio'].'&parse_mode=html&text='.$chat;
-		$response = file_get_contents($url);
-		$this->log(__LINE__.' response from telegram api (in next line): ');
-		$this->log($response);
-		$data = isset($http_response_header) ? $http_response_header : '';
-		$this->log('Response header:'. print_r($data));
-	}*/
 
 	private function msg_to_bot_test($text) {
 		$chat = urlencode($text);
