@@ -3,9 +3,10 @@
 class Seuraavat {
     
     private $tulossa_api_address = 'https://kaaosradio.fi/tulevat/tulevat_api.php?komento=';
+    private $onlyone = 0;
 
-    public function __construct() {
-
+    public function __construct($oneormany) {
+        if ($oneormany == 1) $this->onlyone = 1;
     }
     public function handle($args) {
         $data = '';
@@ -13,8 +14,8 @@ class Seuraavat {
         if ($json = file_get_contents($this->tulossa_api_address.'seuraavat'.urlencode($query))) {
             if($newdata = json_decode($json)) {
                 foreach ($newdata as $line) {
-                    file_put_contents(__DIR__.'/../logs/seuraavat_logi.log', date('Y-m-d H:i:s').' --line: '.print_r($line, true), FILE_APPEND);
                     $data .= $this->format_line($line) . "\n";
+                    if($this->onlyone == 1) break;
                 }
             }
         }
@@ -31,9 +32,4 @@ class Seuraavat {
         return $line;
     }
 }
-/* For testing:*/
-//$est = new Seuraavat();
-//$data = $est->handle('2');
-//echo "Received data: ".$data;
-/**/
 ?>
