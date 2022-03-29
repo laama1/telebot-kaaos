@@ -20,7 +20,7 @@ class TelegramApi {
 
 	private $path = '';				// telegram webhook url
 	private $logfile;				// text log file
-	private $logenabled = 0;		// log to file enabled or not
+	private $logenabled = 1;		// log to file enabled or not
 	private $channels = array();	// telegram channels / their id's
 	private $chatId = '';			// where the message came from
 	private $tags = '';				// id-tags for stream
@@ -33,7 +33,7 @@ class TelegramApi {
 		$input = file_get_contents("php://input");
 		$update = json_decode($input, TRUE);
 		$this->log('--------------------');
-		#$this->log($input . PHP_EOL);
+		$this->log($input . PHP_EOL);
 		include dirname(__FILE__).'/config.php';
 		$this->path = $path;
 		$this->channels = $channels;
@@ -47,6 +47,13 @@ class TelegramApi {
 			'!seuraava' => new Seuraavat(1),
 			'!s' => new Weather(),
 			'!help' => new Help(),
+			'/np' => new Np(),
+			'/nytsoi' => new Nytsoi(),
+			'/kuuntelijat' => new Kuuntelijat(),
+			'/seuraavat' => new Seuraavat(null),
+			'/seuraava' => new Seuraavat(1),
+			'/s' => new Weather(),
+			'/help' => new Help(),
 		];
 		
 		
