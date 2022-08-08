@@ -7,15 +7,15 @@ class Np {
     public function __construct() {
 
     }
-    public function handle($args) : ?string {
+    public function handle($args) : string {
         $tags = '';
-        if (!$args[0]) {
-            $args[0] = 'stream2';
+        if (!$args[1]) {
+            $args[1] = 'stream2';
         }
-        if ($tags = file_get_contents($this->npfile_address.$args[0].'_tags')) {
-            if ($args[0] != 'stream2') $tags .= "\n".$this->listen_address.$args[0];
-            return $tags;
+        if ($tags = file_get_contents($this->npfile_address.$args[1].'_tags')) {
+            if ($args[1] != 'stream2') $tags .= "\n".$this->listen_address.$args[0];
         }
+        return $tags;
     }
 }
 
