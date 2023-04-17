@@ -5,6 +5,7 @@ require_once('plugins/kuuntelijat.php');
 require_once('plugins/nytsoi.php');
 require_once('plugins/help.php');
 require_once('plugins/seuraavat.php');
+require_once('plugins/sober_curious.php');
 
 class TelegramApi {
 
@@ -23,9 +24,6 @@ class TelegramApi {
 	private $logenabled = 1;		// log to file enabled or not
 	private $channels = array();	// telegram channels / their id's
 	private $chatId = '';			// where the message came from
-	private $tags = '';				// id-tags for stream
-	private $listenurl = 'https://kaaosradio.fi:8001/';		// kaaosradio icecast server address
-
 	private $commands = array();
 
 	public function __construct() {
@@ -47,6 +45,7 @@ class TelegramApi {
 			'!seuraava' => new Seuraavat(1),
 			'!s' => new Weather(),
 			'!help' => new Help(),
+			'!sober' => new Sober(),
 			'/np' => new Np(),
 			'/nytsoi' => new Nytsoi(),
 			'/kuuntelijat' => new Kuuntelijat(),
@@ -62,20 +61,28 @@ class TelegramApi {
 
 		if (isset($update['message'])) {
 			// Private message
-			$data = $update["message"]["text"];
+			$this->log("private message");
+			$data = $update['message']['text'] ?? '';
 			$this->chatId = $update["message"]["chat"]["id"];
 		} elseif (isset($update['channel_post'])) {
 			// Channel message
-			$data = $update['channel_post']['text'];
+			$this->log("channel_post");
+			$data = $update['channel_post']['text'] ?? '';
 			$this->chatId = $update['channel_post']['chat']['id'];
 		}
 		if ($data == '') return;
+		$this->log("phew");
 		$args = explode(' ', $data);
-		$command = array_shift($args);
+		//$command = array_shift($args);
+		$command = $args[0];
+		$command = preg_replace('/\@(.*)/', '', $command);
+		$this->log("command now: $command");
+
 		if (isset($this->commands[$command])) {
-			$this->log(__LINE__.' Command found! '.$command);
+			$this->log(__LINE__.': Command found! '.$command);
 			$this->log('Args: '.print_r($args, true));
 			$tags = $this->commands[$command]->handle($args);
+			$this->log('tags: '.$tags);
 		}
 
 		if ($tags != '') {
@@ -101,7 +108,8 @@ class TelegramApi {
 
 	private function log($text) {
 		if ($this->logenabled) {
-			file_put_contents($this->logfile, date('Y-m-d H:i:s').': IP: '.$this->get_ip().', '.$text . PHP_EOL, FILE_APPEND);
+//			file_put_contents($this->logfile, date('Y-m-d H:i:s').': IP: '.$this->get_ip().', '.$text . PHP_EOL, FILE_APPEND);
+			file_put_contents($this->logfile, date('Y-m-d H:i:s').': '. $text . PHP_EOL, FILE_APPEND);
 		}
 	}
 
