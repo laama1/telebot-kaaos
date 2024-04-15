@@ -1,10 +1,6 @@
 <?php
 
 class MyBot_Discord {
-    //=======================================================================================================
-    // Create new webhook in your Discord channel settings and copy&paste URL
-    //=======================================================================================================
-
     // Discord #announcements
     private $_webhookurl = '';
     
@@ -23,6 +19,7 @@ class MyBot_Discord {
         $this->_video_rtmpurl = $rtmp_video_url;
         $this->_icecasturl = $icecast_url;
         $this->_kaaosradiourl = $kaaosradio_url;
+        //$this->_webhookurl = $discord_botspam_webhookurl;
         $this->_webhookurl = $discord_webhookurl;
         $this->_botspam_webhook = $discord_botspam_webhookurl;
         $this->_icecasturl = $icecast_url;
@@ -45,8 +42,9 @@ class MyBot_Discord {
             // Kun pyyntö tulee laaman owncastista.
 			$postdata = file_get_contents('php://input');
 			$oc_data = json_decode($postdata);
-			file_put_contents(dirname(__FILE__).'/logs/owncast.log', $oc_data->eventData->name, FILE_APPEND);
-			if (isset($oc_data->eventData->streamTitle)) {
+            
+			if (isset($oc_data->eventData) && isset($oc_data->eventData->streamTitle)) {
+                file_put_contents(dirname(__FILE__).'/logs/owncast.log', $oc_data->eventData->name, FILE_APPEND);
 				$oc_data_send = $oc_data->eventData->streamTitle;
 				$this->composeFromOwncast($oc_data_send);
 			}
@@ -57,23 +55,23 @@ class MyBot_Discord {
 		$timestamp = date("c", strtotime("now"));
 		$json_data = json_encode([
         	"content" => "Laamatestaa owncastia. ja Chattikin on!",
-            "username" => "kaaosradio",
-            "avatar_url" => "https://kaaosradio.fi/favicon.png",
+            "username" => "LaamaTV",
+            "avatar_url" => "https://ul.8-b.fi/favicon.png",
             "tts" => false,
             "embeds" => [
 				[
                     "title" => $data,
                     "type" => "rich",
-                    "url" => "https://video.8-b.fi",
+                    "url" => "https://laamatv.8-b.fi",
                     "timestamp" => $timestamp,
 					"color" => hexdec("11aa22"),
                     "image" => [
-                        "url" => "https://kaaosradio.fi/favicon.png"
+                        "url" => "https://ul.8-b.fi/favicon.png"
                     ],
                     "fields" => [
                         [
                             "name" => "RTMP Url",
-                            "value" => "rtmp://video.8-b.fi:1935",
+                            "value" => "rtmp://laamatv.8-b.fi:1935/live",
                             "inline" => false
                         ],
                     ]

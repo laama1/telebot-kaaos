@@ -64,22 +64,23 @@ class Weather {
 	private $db;
 	private $dbpath;
 	private $returnstr;
-	private $logenabled = 1;
+	#private $logenabled = 1;
 	private $logfile;
 
 	public function __construct($msg = false) {
-		if ($msg == false) return;
-		$this->logfile = dirname(__FILE__).'/logs/weather_debug.txt';
-		include dirname(__FILE__).'/config.php';
-		$this->dbpath = $weatherdb;
-		$this->apikey .= $openwmapapikey;
-		if ($string = $this->filter_keyword($msg)) {
-			$this->returnstr = $string;
-		}
+
 	}
 
-	public function handle($args) {
-        
+	public function handle($args = null) : string {
+		if ($args == null) return '';
+		$this->logfile = __DIR__.'/../logs/weather_debug.txt';
+		include __DIR__.'/../config.php';
+		$this->dbpath = $weatherdb;
+		$this->apikey .= $openwmapapikey;
+		if ($string = $this->filter_command($args[0])) {
+			return $string;
+		}
+		return '';
     }
 
 	public function getMessage() {
@@ -99,10 +100,10 @@ class Weather {
 		return json_decode($data);
 	}
 
-	private function filter_keyword ($msg) {
+	private function filter_command($msg) {
 		$returnstring = '';
-		if (preg_match('/\!(sää |saa |s[^ae] ?)(.*)$/', $msg, $city)) {
-			$returnstring = $this->getSayLine($this->FINDWEATHER($city[2]));
+		if (preg_match('/!s (.*)$/', $msg, $city)) {
+			$returnstring = $this->getSayLine($this->FINDWEATHER($city[1]));
 		} elseif (preg_match('/\!(se ?)(.*)$/', $msg, $city)) {
 			$returnstring = $this->FINDFORECAST($city[2]);
 		} elseif (preg_match('/\!(sa ?)(.*)$/', $msg, $city)) {
@@ -436,12 +437,11 @@ class Weather {
 	}
 
     private function log($text) {
-        if ($this->logenabled) {
-            file_put_contents($this->logfile, date('Y-m-d H:i:s').': '.$text . PHP_EOL, FILE_APPEND);
-        }
+        file_put_contents($this->logfile, date('Y-m-d H:i:s').': '.$text . PHP_EOL, FILE_APPEND);
     }
 	
 }
 
-//$w = new Weather('!sa Jyväskylä');
+$w = new Weather();
+$w->handle('Jyväskylä');
 ?>

@@ -6,14 +6,15 @@ class Seuraavat {
     private $onlyone = 0;
     private $which_platform = 0;
 
-    public function __construct($oneormany, $which_platform = 0) {
-        if ($oneormany == 1) $this->onlyone = 1;
+    public function __construct($onlyone = 0, $which_platform = 0) {
+        $this->onlyone = $onlyone;
         $this->which_platform = $which_platform;
     }
-    public function handle($args = null) :string {
+    public function handle(array $args = null) :string {
         $data = '';
         $query = isset($args[1]) ? ' '.$args[1] : '';
-        if ($json = file_get_contents($this->tulossa_api_address.'seuraavat'.urlencode($query))) {
+        $request_address = $this->tulossa_api_address.'seuraavat'.urlencode($query);
+        if ($json = file_get_contents($request_address)) {
             if($newdata = json_decode($json)) {
                 foreach ($newdata as $line) {
                     $data .= $this->format_line($line) . "\n";
