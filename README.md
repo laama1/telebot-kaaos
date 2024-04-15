@@ -3,13 +3,13 @@
 
 # Commands available in Telegram:
 ## Weather:
->!s <city>
+>!s city
 
 ### Weather forecast:
->!se <city>
+>!se city
 
 ### Weather for near area:
->!sa <city>
+>!sa city
 
 ## Get kaaosradio current listeners:
 >!kuuntelijat
