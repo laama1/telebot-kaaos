@@ -13,21 +13,21 @@ function pinMsg($channel_id, $path, $msgId) {
 }
 
 function unPinMsg($channel_id, $path, $msgId) {
-    $url = $path . '/unpingChatMessage?chat_id=' . $channel_id . '&message_id=' . $msgId;
+    $url = $path . '/unpinChatMessage?chat_id=' . $channel_id . '&message_id=' . $msgId;
     return doRequest($url);
 }
 
 function doRequest($url) {
     $response_json = null;
     try {
+        file_put_contents(__DIR__.'/logs/responselog.txt', __LINE__ . ': url: ' . $url, FILE_APPEND);
         $response = file_get_contents($url);
-        $response_json = json_decode($response, false);
-
         // log response to file
-        file_put_contents(__DIR__.'/logs/responselog.txt', 'Response ok: ' . $response);
+        file_put_contents(__DIR__.'/logs/responselog.txt', __LINE__ . ': Response ok: ' . $response, FILE_APPEND);
 
+        $response_json = json_decode($response, false);
     } catch (Exception $e) {
-        file_put_contents(__DIR__. '/logs/response_error.txt', 'Response error: ' . $e->getMessage(), FILE_APPEND);
+        file_put_contents(__DIR__. '/logs/response_error.txt', __LINE__ . ': Response error: ' . $e->getMessage(), FILE_APPEND);
         exit;
     }
     return $response_json;
@@ -67,12 +67,17 @@ if (isset($_GET['test'])) {
 
 } elseif (isset($_GET['unpin'])) {
     $data = $_GET['unpin'];
-    $url = $path . '/unpinChatMessage?chat_id=' . $channels['kaaosradio'] . '&message_id=' . $data;
-    $response_json = doRequest($url);
+    $response_json = unPinMsg($channels['kaaosradio'], $path, $data);
+    $returnMsg = ['success' => 'ok'];
+    if ($response_json == '') {
+        $returnMsg = ['success' => 'ok'];
+    }
 
 } else {
     return;
 }
 
 // print return message
-echo json_encode($returnMsg);
+if (isset($returnMsg)) {
+    echo json_encode($returnMsg);
+}

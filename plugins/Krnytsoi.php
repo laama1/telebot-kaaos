@@ -1,6 +1,7 @@
 <?php
+//namespace plugins;
 
-class Template {
+class Krnytsoi {
 
     private $nytsoiurl = 'http://kaaosradio.fi/nytsoi.txt';
 
@@ -11,11 +12,11 @@ class Template {
      */
     private $which_platform = 0;
 
-    public function __construct($which_platform = 0) {
+    public function __construct(int $which_platform = 0) {
         $this->which_platform = $which_platform;
     }
 
-    public function handle($args = []): string {
+    public function handle($args = null): string {
         if ($args[0]) {
             $command = $args[0];
         }
@@ -24,6 +25,14 @@ class Template {
         }
         $data = '';
 
+        if ($command == '/krnytsoi') {
+            $this->krnytsoi($param1);
+        }
+
         return $data;
+    }
+
+    private function krnytsoi($param = '') {
+
     }
 }

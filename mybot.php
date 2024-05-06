@@ -6,6 +6,7 @@ require_once('plugins/nytsoi.php');
 require_once('plugins/help.php');
 require_once('plugins/seuraavat.php');
 require_once('plugins/sober_curious.php');
+require_once('plugins/Krnytsoi.php');
 
 class TelegramApi {
 
@@ -30,8 +31,6 @@ class TelegramApi {
 		$this->logfile = dirname(__FILE__). '/logs/TelegramApi_debug.txt';
 		$input = file_get_contents("php://input");
 		$update = json_decode($input, TRUE);
-		$this->log('--------------------');
-		$this->log($input . PHP_EOL);
 		include dirname(__FILE__).'/config.php';
 		$this->path = $path;
 		$this->channels = $channels;
@@ -48,6 +47,7 @@ class TelegramApi {
 			'!sober' => new Sober(),
 			'/np' => new Np(),
 			'/nytsoi' => new Nytsoi(),
+			'/krnytsoi' => new Krnytsoi(),
 			'/kuuntelijat' => new Kuuntelijat(),
 			'/seuraavat' => new Seuraavat(null),
 			'/seuraava' => new Seuraavat(1),
@@ -61,7 +61,6 @@ class TelegramApi {
 
 		if (isset($update['message'])) {
 			// Private message
-			$this->log("private message");
 			$data = $update['message']['text'] ?? '';
 			$this->chatId = $update["message"]["chat"]["id"];
 		} elseif (isset($update['channel_post'])) {
@@ -71,18 +70,18 @@ class TelegramApi {
 			$this->chatId = $update['channel_post']['chat']['id'];
 		}
 		if ($data == '') return;
-		$this->log("phew");
 		$args = explode(' ', $data);
 		//$command = array_shift($args);
 		$command = $args[0];
 		$command = preg_replace('/\@(.*)/', '', $command);
-		$this->log("command now: $command");
 
 		if (isset($this->commands[$command])) {
 			$this->log(__LINE__.': Command found! '.$command);
 			$this->log('Args: '.print_r($args, true));
 			$tags = $this->commands[$command]->handle($args);
 			$this->log('tags: '.$tags);
+		} else {
+			return;
 		}
 
 		if ($tags != '') {
@@ -93,7 +92,7 @@ class TelegramApi {
 	private function msg_to_priv($text, $chatid) {
 		$chat = urlencode($text);
 		$response = file_get_contents($this->path."/sendmessage?chat_id=".$chatid.'&text='.$chat."&parse_mode=html");
-		$this->log(__LINE__.' Text: '.$text.', chat: '.$chat.', Chatid: '.$chatid.', Response: '.$response);
+		$this->log(__LINE__.' Text: '.$text.'chat: '.$chat.', Chatid: '.$chatid."\n, Response: ".$response);
 	}
 
 	private function msg_to_bot_test($text) {

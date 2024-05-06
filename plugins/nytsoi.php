@@ -3,6 +3,11 @@
 class Nytsoi {
 
     private $nytsoiurl = 'http://kaaosradio.fi/nytsoi.txt';
+    /**
+     * 0 = telegram
+     * 1 = discord
+     * @var int|null
+     */
     private $which_platform = 0;
 
     public function __construct($which_platform = 0) {
