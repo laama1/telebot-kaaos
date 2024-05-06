@@ -13,7 +13,7 @@ class Np {
             $args[1] = 'stream2';
         }
         if ($tags = file_get_contents($this->npfile_address.$args[1].'_tags')) {
-            if ($args[1] != 'stream2') $tags .= "\n".$this->listen_address.$args[0];
+            if ($args[1] != 'stream2') $tags .= "\n".$this->listen_address.$args[1];
         }
         return $tags;
     }
