@@ -41,4 +41,3 @@ class Seuraavat {
         return $line;
     }
 }
-?>

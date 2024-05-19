@@ -1,19 +1,26 @@
 <?php
-//namespace plugins;
+//namespace telebot_kaaos\plugins\Krnytsoi;
 
-class Krnytsoi {
+include __DIR__.'/Template.php';
+
+class Krnytsoi extends Template {
 
     private $nytsoiurl = 'http://kaaosradio.fi/nytsoi.txt';
+    private $update_krnytsoi_url = 'https://kaaosradio.fi/nytsoi_api/nytsoi_api.php?';
+    protected $logfile = '';
 
     /**
      * 0 = telegram
      * 1 = discord
      * @var int
      */
-    private $which_platform = 0;
+    protected $which_platform = 0;
 
     public function __construct(int $which_platform = 0) {
+        $this->logfile = __DIR__.'/../logs/'.__CLASS__.'.log';
         $this->which_platform = $which_platform;
+        include __DIR__.'/../config.php';
+        $this->$update_krnytsoi_url .= $nytsoiapi_param .'='. $nytsoiapi_arg . '&';
     }
 
     public function handle($args = null): string {
@@ -21,18 +28,21 @@ class Krnytsoi {
             $command = $args[0];
         }
         if ($args[1]) {
-            $param1 = $args[1];
+            $params = implode(' ', array_splice($args, 1));
         }
         $data = '';
 
         if ($command == '/krnytsoi') {
-            $this->krnytsoi($param1);
+            $this->krnytsoi($params);
         }
-
         return $data;
     }
 
     private function krnytsoi($param = '') {
-
+        if ($param == '') return;
+        $this->log(__LINE__. ' ' . $param);
+        $param = urlencode($param);
+        $url = $this->update_krnytsoi_url . "text-audio=1&text-chat=1&song=$param";
+        file_get_contents($url);
     }
 }

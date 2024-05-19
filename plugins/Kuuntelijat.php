@@ -7,7 +7,6 @@ class Kuuntelijat {
 
     public function __construct($which_platform = 0) {
         $this->which_platform = $which_platform;
-        
     }
 
     public function handle($args = null) : string {
@@ -18,7 +17,6 @@ class Kuuntelijat {
             } elseif ($this->which_platform == 1) {
                 $data = '**/// '.$data->mount.' Kuuntelijat:** '.$data->listeners.', **Max kuuntelijat:** '.$data->peak_listeners;
             }
-            
         }
         return $data;
     }

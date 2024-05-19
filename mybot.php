@@ -1,10 +1,11 @@
 <?php
+namespace telebot_kaaos\plugins;
 require_once('plugins/weather.php');
 require_once('plugins/np.php');
-require_once('plugins/kuuntelijat.php');
+require_once('plugins/Kuuntelijat.php');
 require_once('plugins/nytsoi.php');
-require_once('plugins/help.php');
-require_once('plugins/seuraavat.php');
+require_once('plugins/Help.php');
+require_once('plugins/Seuraavat.php');
 require_once('plugins/sober_curious.php');
 require_once('plugins/Krnytsoi.php');
 
@@ -77,9 +78,9 @@ class TelegramApi {
 
 		if (isset($this->commands[$command])) {
 			$this->log(__LINE__.': Command found! '.$command);
-			$this->log('Args: '.print_r($args, true));
+			$this->log(__LINE__.': Args: '.print_r($args, true));
 			$tags = $this->commands[$command]->handle($args);
-			$this->log('tags: '.$tags);
+			$this->log(__LINE__.': tags: '.$tags);
 		} else {
 			return;
 		}
@@ -108,7 +109,7 @@ class TelegramApi {
 	private function log($text) {
 		if ($this->logenabled) {
 //			file_put_contents($this->logfile, date('Y-m-d H:i:s').': IP: '.$this->get_ip().', '.$text . PHP_EOL, FILE_APPEND);
-			file_put_contents($this->logfile, date('Y-m-d H:i:s').': '. $text . PHP_EOL, FILE_APPEND);
+			file_put_contents($this->logfile, date('Y-m-d H:i:s').':'.__CLASS__.':'. $text . PHP_EOL, FILE_APPEND);
 		}
 	}
 

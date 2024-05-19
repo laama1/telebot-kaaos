@@ -1,18 +1,20 @@
 <?php
-namespace plugins;
+//namespace telebot_kaaos\plugins\Template;
 class Template {
 
     private $nytsoiurl = 'http://kaaosradio.fi/nytsoi.txt';
-
+    protected $logfile = '';
     /**
      * 0 = telegram
      * 1 = discord
      * @var int
      */
-    private $which_platform = 0;
+    protected $which_platform = 0;
+    protected $logenabled = 0;
 
     public function __construct($which_platform = 0) {
         $this->which_platform = $which_platform;
+        $this->logfile = __DIR__.'/../logs/'.__CLASS__.'.log';
     }
 
     public function handle($args = []): string {
@@ -20,10 +22,27 @@ class Template {
             $command = $args[0];
         }
         if ($args[1]) {
-            $param1 = $args[1];
+            $params = implode(' ', array_splice($args, 1));
         }
         $data = '';
-
         return $data;
     }
+
+    protected function log($text) {
+		if ($this->logenabled) {
+			file_put_contents($this->logfile, date('Y-m-d H:i:s').':'.__CLASS__.':'. $text . ', IP: ' . $this->get_ip() . PHP_EOL, FILE_APPEND);
+		}
+	}
+
+	protected function get_ip() : string {
+		if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+			$ip = $_SERVER['HTTP_CLIENT_IP'];
+		} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))	{
+			$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+		} else {
+			$ip = $_SERVER['REMOTE_ADDR'];
+		}
+		return $ip;
+	}
+
 }
