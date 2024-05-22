@@ -1,13 +1,25 @@
 <?php
-namespace telebot_kaaos\plugins;
-require_once('plugins/weather.php');
-require_once('plugins/np.php');
-require_once('plugins/Kuuntelijat.php');
-require_once('plugins/nytsoi.php');
-require_once('plugins/Help.php');
-require_once('plugins/Seuraavat.php');
-require_once('plugins/sober_curious.php');
-require_once('plugins/Krnytsoi.php');
+require_once(__DIR__ . '/plugins/Template.php');
+require_once(__DIR__ . '/plugins/Seuraavat.php');
+require_once(__DIR__ . '/plugins/Weather.php');
+require_once(__DIR__ . '/plugins/Np.php');
+require_once(__DIR__ . '/plugins/Kuuntelijat.php');
+require_once(__DIR__ . '/plugins/Nytsoi.php');
+require_once(__DIR__ . '/plugins/Help.php');
+require_once(__DIR__ . '/plugins/Sober_curious.php');
+require_once(__DIR__ . '/plugins/Krnytsoi.php');
+
+
+use Telebot\Plugins\Seuraavat;
+use Telebot\Plugins\Weather;
+use Telebot\Plugins\Np;
+use Telebot\Plugins\Kuuntelijat;
+use Telebot\Plugins\Nytsoi;
+use Telebot\Plugins\Help;
+use Telebot\Plugins\Sober_curious;
+use Telebot\Plugins\Krnytsoi;
+//use Telebot\Plugins\Template;
+
 
 class TelegramApi {
 
@@ -38,25 +50,25 @@ class TelegramApi {
 		$this->logenabled = $logenabled;
 		
 		$this->commands = [
+			'!seuraavat' => new Seuraavat(null),
+			'!seuraava' => new Seuraavat(1),
+			'/seuraavat' => new Seuraavat(null),
+			'/seuraava' => new Seuraavat(1),
 			'!np' => new Np(),
 			'!nytsoi' => new Nytsoi(),
 			'!kuuntelijat' => new Kuuntelijat(),
-			'!seuraavat' => new Seuraavat(null),
-			'!seuraava' => new Seuraavat(1),
 			'!s' => new Weather(),
 			'!help' => new Help(),
-			'!sober' => new Sober(),
+			'!sober' => new Sober_curious(),
 			'/np' => new Np(),
 			'/nytsoi' => new Nytsoi(),
 			'/krnytsoi' => new Krnytsoi(),
 			'/kuuntelijat' => new Kuuntelijat(),
-			'/seuraavat' => new Seuraavat(null),
-			'/seuraava' => new Seuraavat(1),
+
 			'/s' => new Weather(),
 			'/help' => new Help(),
 		];
-		
-		
+
 		$tags = '';
 		$data = '';
 
@@ -126,4 +138,3 @@ class TelegramApi {
 }
 
 $botten = new TelegramApi();
-?>

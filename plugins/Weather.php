@@ -1,4 +1,5 @@
 <?php
+namespace Telebot\Plugins;
 /**
 	UTF8 emojis:
 	⛈️ Cloud With Lightning and Rain
@@ -53,8 +54,7 @@
 
 **/
 
-class Weather {
-	
+class Weather extends Template {
 	private $apikey = '&units=metric&appid=';
 	private $url = 'https://api.openweathermap.org/data/2.5/weather?';
 	private $forecasturl = 'https://api.openweathermap.org/data/2.5/forecast?';
@@ -71,7 +71,7 @@ class Weather {
 
 	}
 
-	public function handle($args = null) : string {
+	public function handle(array $args = []) : string {
 		if ($args == null) return '';
 		$this->logfile = __DIR__.'/../logs/weather_debug.txt';
 		include __DIR__.'/../config.php';
@@ -284,7 +284,7 @@ class Weather {
 	 * get city coordinates from DB
 	 */
 	private function GETCITYCOORDS ($city) {
-		$city = "%${city}%";
+		$city = "%{$city}%";
 		$sql = 'SELECT DISTINCT LAT, LON,NAME from CITIES where NAME Like ? or (POSTNUMBER like ? AND POSTNUMBER is not null) LIMIT 1;';
 		$this->log(__LINE__.': hep');
 		if($results = $this->readDB($sql, array($city, $city))) {
@@ -444,4 +444,3 @@ class Weather {
 
 $w = new Weather();
 $w->handle('Jyväskylä');
-?>

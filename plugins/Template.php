@@ -1,5 +1,5 @@
 <?php
-//namespace telebot_kaaos\plugins\Template;
+namespace Telebot\Plugins;
 class Template {
 
     private $nytsoiurl = 'http://kaaosradio.fi/nytsoi.txt';
@@ -17,7 +17,7 @@ class Template {
         $this->logfile = __DIR__.'/../logs/'.__CLASS__.'.log';
     }
 
-    public function handle($args = []): string {
+    public function handle(array $args = []): string {
         if ($args[0]) {
             $command = $args[0];
         }
@@ -28,7 +28,7 @@ class Template {
         return $data;
     }
 
-    protected function log($text) {
+    protected function log(string $text) {
 		if ($this->logenabled) {
 			file_put_contents($this->logfile, date('Y-m-d H:i:s').':'.__CLASS__.':'. $text . ', IP: ' . $this->get_ip() . PHP_EOL, FILE_APPEND);
 		}

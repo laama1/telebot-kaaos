@@ -1,5 +1,5 @@
 <?php
-
+namespace Telebot\Plugins;
 include_once(__DIR__.'/db.functions.php');
 /**
  * Write to database when person is !sober.
@@ -9,14 +9,14 @@ include_once(__DIR__.'/db.functions.php');
  * @date 2022-04-24
  */
 
-class Sober {
+class Sober_curious extends Template {
 
 
     public function __construct() {
         
     }
 
-    public function handle($args = null): string {
+    public function handle(array $args = []): string {
         return '';
     }
 

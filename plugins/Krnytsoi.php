@@ -1,7 +1,5 @@
 <?php
-//namespace telebot_kaaos\plugins\Krnytsoi;
-
-include __DIR__.'/Template.php';
+namespace Telebot\Plugins;
 
 class Krnytsoi extends Template {
 
@@ -20,10 +18,10 @@ class Krnytsoi extends Template {
         $this->logfile = __DIR__.'/../logs/'.__CLASS__.'.log';
         $this->which_platform = $which_platform;
         include __DIR__.'/../config.php';
-        $this->$update_krnytsoi_url .= $nytsoiapi_param .'='. $nytsoiapi_arg . '&';
+        $this->update_krnytsoi_url .= $nytsoiapi_param .'='. $nytsoiapi_arg . '&';
     }
 
-    public function handle($args = null): string {
+    public function handle(array $args = []): string {
         if ($args[0]) {
             $command = $args[0];
         }

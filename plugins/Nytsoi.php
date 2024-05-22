@@ -1,6 +1,6 @@
 <?php
-
-class Nytsoi {
+namespace Telebot\Plugins;
+class Nytsoi extends Template {
 
     private $nytsoiurl = 'http://kaaosradio.fi/nytsoi.txt';
     /**
@@ -14,7 +14,7 @@ class Nytsoi {
         $this->which_platform = $which_platform;
     }
 
-    public function handle($args = null) : string {
+    public function handle(array $args = []) : string {
         $data = '';
         if ($data = file_get_contents($this->nytsoiurl)) {
             if ($this->which_platform == 0) {
@@ -29,5 +29,3 @@ class Nytsoi {
         return $data;
     }
 }
-
-?>

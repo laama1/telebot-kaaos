@@ -1,13 +1,13 @@
 <?php
-
-class Np {
+namespace Telebot\Plugins;
+class Np extends Template {
     private $npfile_address = 'https://kaaosradio.fi/npfile_';
     private $listen_address = 'https://kaaosradio.fi:8001/';
 
     public function __construct() {
 
     }
-    public function handle($args) : string {
+    public function handle(array $args = []) : string {
         $tags = '';
         if (!$args[1]) {
             $args[1] = 'stream2';
