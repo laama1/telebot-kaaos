@@ -254,4 +254,3 @@ class Twitch_haku {
                 $data . PHP_EOL, FILE_APPEND);
     }
 }
-?>

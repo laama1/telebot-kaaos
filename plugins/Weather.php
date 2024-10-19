@@ -65,7 +65,7 @@ class Weather extends Template {
 	private $dbpath;
 	private $returnstr;
 	#private $logenabled = 1;
-	private $logfile;
+	protected $logfile;
 
 	public function __construct($msg = false) {
 
@@ -387,9 +387,9 @@ class Weather extends Template {
 	 */
 	private function createDBConnection() {
 		#$this->log(__LINE__.': hepDO');
-		$this->db = new PDO("sqlite:$this->dbpath");
+		$this->db = new \PDO("sqlite:$this->dbpath");
 		#$this->log(__LINE__.': hep PDO');
-		$this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		$this->db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 		return true;
 	}
 
@@ -402,9 +402,9 @@ class Weather extends Template {
 					return $pdostmt->fetchAll();
 				}
 			}
-		} catch(PDOException $pe) {
+		} catch(\PDOException $pe) {
 			$this->log(__LINE__.': PDO Exception: '. $pe->getMessage());
-		} catch(Exception $e) {
+		} catch(\Exception $e) {
 			$this->log(__LINE__.': Exception: '.$e->getMessage());
 		}
 		return false;
@@ -427,20 +427,20 @@ class Weather extends Template {
 			} else {
 				#$this->pe(__FUNCTION__.": prepare statement error.");//: ".$pdostmt->errorInfo);
 			}
-		} catch(PDOException $e) {
+		} catch(\PDOException $e) {
 			#$this->pe(__FUNCTION__.": PDOException: ".print_r($e,1));
-		} catch(EXCeption $e) {
+		} catch(\EXCeption $e) {
 			#$this->pe(__FUNCTION__.": Exception: ".$e);
 		}
 		#$this->db = null;
 		return false;
 	}
 
-    private function log($text) {
+    protected function log($text) {
         file_put_contents($this->logfile, date('Y-m-d H:i:s').': '.$text . PHP_EOL, FILE_APPEND);
     }
 	
 }
 
-$w = new Weather();
-$w->handle('Jyväskylä');
+//$w = new Weather();
+//$w->handle(['Jyväskylä']);

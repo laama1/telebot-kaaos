@@ -1,6 +1,6 @@
 <?php
 namespace Telebot\Plugins;
-class Seuraavat extends Template {
+class Tanaan extends Template {
     
     private $tulossa_api_address = 'https://kaaosradio.fi/tulevat/tulevat_api.php?komento=';
     private $onlyone = 0;
@@ -18,7 +18,7 @@ class Seuraavat extends Template {
     public function handle(array $args = []): string {
         $data = '';
         $query = isset($args[1]) ? ' '.$args[1] : '';
-        $request_address = $this->tulossa_api_address.'seuraavat'.urlencode($query);
+        $request_address = $this->tulossa_api_address.'today'.urlencode($query);
         if ($json = file_get_contents($request_address)) {
             if($newdata = json_decode($json)) {
                 foreach ($newdata as $line) {
@@ -30,7 +30,7 @@ class Seuraavat extends Template {
         return $data;
     }
 
-    private function format_line($arr) :string {
+    private function format_line($arr): string {
         $starttime_formatted = $arr->sDate.'T'.$arr->sTime . ":00";
         $sdatetime = new \DateTime($starttime_formatted);
         $endtime_formatted = $arr->eDate.'T'.$arr->eTime . ":00";

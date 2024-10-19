@@ -8,6 +8,7 @@ require_once(__DIR__ . '/plugins/Nytsoi.php');
 require_once(__DIR__ . '/plugins/Help.php');
 require_once(__DIR__ . '/plugins/Sober_curious.php');
 require_once(__DIR__ . '/plugins/Krnytsoi.php');
+require_once(__DIR__ . '/plugins/Tanaan.php');
 
 
 use Telebot\Plugins\Seuraavat;
@@ -18,6 +19,7 @@ use Telebot\Plugins\Nytsoi;
 use Telebot\Plugins\Help;
 use Telebot\Plugins\Sober_curious;
 use Telebot\Plugins\Krnytsoi;
+use Telebot\Plugins\Tanaan;
 //use Telebot\Plugins\Template;
 
 
@@ -63,8 +65,11 @@ class TelegramApi {
 			'/np' => new Np(),
 			'/nytsoi' => new Nytsoi(),
 			'/krnytsoi' => new Krnytsoi(),
+			'/krnytsoivideo' => new Krnytsoi(),
+			'/krnytsoivideotwitch' => new Krnytsoi(),
 			'/kuuntelijat' => new Kuuntelijat(),
-
+			'/today' => new Tanaan(),
+			'!today' => new Tanaan(),
 			'/s' => new Weather(),
 			'/help' => new Help(),
 		];

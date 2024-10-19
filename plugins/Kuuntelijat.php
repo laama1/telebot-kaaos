@@ -3,11 +3,6 @@ namespace Telebot\Plugins;
 class Kuuntelijat extends Template {
 
     private $kuuntelijat_address = 'http://kaaosradio.fi/kuuntelijat/kuuntelijat_api.php';
-    private $which_platform = 0;
-
-    public function __construct($which_platform = 0) {
-        $this->which_platform = $which_platform;
-    }
 
     public function handle(array $args = []) : string {
         $data = '';

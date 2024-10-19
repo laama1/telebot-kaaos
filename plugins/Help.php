@@ -1,10 +1,6 @@
 <?php
 namespace Telebot\Plugins;
 class Help extends Template {
-    public function __construct()
-    {
-        
-    }
 
     public function handle(array $args = []): string {
         $string = "<b>!help</b> Botti osaa toistaiseksi seuraavat komennot: \n

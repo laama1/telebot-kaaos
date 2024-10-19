@@ -5,7 +5,7 @@ $chat_msg = '';
 $return_msg = [];
 if (!isset($_GET)) return;
 
-include dirname(__FILE__).'/config.php';
+include __DIR__.'/config.php';
 
 function pinMsg($channel_id, $path, $msgId) {
     $url = $path . '/pinChatMessage?chat_id=' . $channel_id . '&message_id=' . $msgId;
@@ -20,14 +20,14 @@ function unPinMsg($channel_id, $path, $msgId) {
 function doRequest($url) {
     $response_json = null;
     try {
-        file_put_contents(__DIR__.'/logs/responselog.txt', __LINE__ . ': url: ' . $url, FILE_APPEND);
+        file_put_contents(__DIR__.'/logs/responselog.txt', __LINE__ . ': url: ' . $url . PHP_EOL, FILE_APPEND);
         $response = file_get_contents($url);
         // log response to file
-        file_put_contents(__DIR__.'/logs/responselog.txt', __LINE__ . ': Response ok: ' . $response, FILE_APPEND);
+        // file_put_contents(__DIR__.'/logs/responselog.txt', __LINE__ . ': Response ok: ' . $response . PHP_EOL, FILE_APPEND);
 
         $response_json = json_decode($response, false);
     } catch (Exception $e) {
-        file_put_contents(__DIR__. '/logs/response_error.txt', __LINE__ . ': Response error: ' . $e->getMessage(), FILE_APPEND);
+        file_put_contents(__DIR__. '/logs/response_error.txt', __LINE__ . ': Response error: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
         exit;
     }
     return $response_json;
@@ -49,7 +49,6 @@ if (isset($_GET['test'])) {
                         'pinned_msg_id' => $pinned_msg_id 
                     ];
     }
-
 } elseif (isset($_GET['viesti'])) {
     $postdata = $_GET['viesti'];
 } elseif (isset($_GET['nytsoivideo'])) {
@@ -58,13 +57,11 @@ if (isset($_GET['test'])) {
     $chat_msg = urlencode($postdata);
     $url = $path . '/sendmessage?chat_id=' . $channels['kaaosradio'] . '&parse_mode=html&text=' . $chat_msg;
     $response_json = doRequest($url);
-
     if (isset($response_json->result)) {
         $pinned_msg_id = $response_json->result->message_id;
         pinMsg($channels['kaaosradio'], $path, $pinned_msg_id);
         $returnMsg = [ 'pinned_msg_id' => $pinned_msg_id];
     }
-
 } elseif (isset($_GET['unpin'])) {
     $data = $_GET['unpin'];
     $response_json = unPinMsg($channels['kaaosradio'], $path, $data);
@@ -72,7 +69,6 @@ if (isset($_GET['test'])) {
     if ($response_json == '') {
         $returnMsg = ['success' => 'ok'];
     }
-
 } else {
     return;
 }

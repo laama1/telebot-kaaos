@@ -12,10 +12,6 @@ include_once(__DIR__.'/db.functions.php');
 class Sober_curious extends Template {
 
 
-    public function __construct() {
-        
-    }
-
     public function handle(array $args = []): string {
         return '';
     }

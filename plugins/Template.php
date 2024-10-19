@@ -10,9 +10,9 @@ class Template {
      * @var int
      */
     protected $which_platform = 0;
-    protected $logenabled = 0;
+    protected $logenabled = 1;
 
-    public function __construct($which_platform = 0) {
+    public function __construct(int $which_platform = 0) {
         $this->which_platform = $which_platform;
         $this->logfile = __DIR__.'/../logs/'.__CLASS__.'.log';
     }
